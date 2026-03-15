@@ -2,7 +2,7 @@
 
 A Godot 4 GDExtension plugin that adds a `SpringBody2D` node, which applies a customizable spring effect to incoming `RigidBody2D` nodes using physics calculations.
 
-![SpringBody2D Demo](demo.gif)
+![Image](https://github.com/user-attachments/assets/012780b7-403e-4426-b8b7-e1792f3fcb8d)
 
 ## Installation
 
