@@ -2,6 +2,7 @@ build/
 .sconsign.dblite
 .vscode/
 project/
+godot-cpp/
 *.import
 *.uid
 *.exp
