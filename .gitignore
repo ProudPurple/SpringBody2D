@@ -1,0 +1,7 @@
+bin/
+build/
+.sconsign.dblite
+.vscode/
+project/
+*.import
+*.uid

@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <godot_cpp/classes/tween.hpp>
 #include <godot_cpp/variant/vector2.hpp>
+#include <godot_cpp/classes/node.hpp>
 #include <godot_cpp/classes/node2d.hpp>
 #include <godot_cpp/classes/geometry2d.hpp>
 #include <godot_cpp/classes/physics_server2d.hpp>
@@ -38,6 +39,7 @@ namespace godot {
 		float force_weight;
 		float activation;
 		float external_width;
+		float MINIMUM_FORCE;
 		unordered_map<RigidBody2D*, SpringTarget> spring_targets;
 
 	protected:
@@ -49,6 +51,8 @@ namespace godot {
 		void _ready();
 		void _bind_method();
 		void set_spring_force(float s_force);
+		void set_minimum_force(float m_force);
+		float get_minimum_force() const;
 		float get_spring_force() const;
 		void set_impact_force(float i_force);
 		float get_impact_force() const;
@@ -61,8 +65,10 @@ namespace godot {
 		void set_growth_force(float g_force);
 		float get_growth_force() const;
 		void _physics_process(double delta) override;
+		void _notification(int p_what);
 		void _on_body_entered(Node *body);
 		void _on_body_exited(Node *body);
+		virtual PackedStringArray _get_configuration_warnings() const override;
 		Vector2 _calculate_surface_normal(RigidBody2D* rb, SpringTarget spring);
 
 	};

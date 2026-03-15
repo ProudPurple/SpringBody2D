@@ -10,13 +10,14 @@ using namespace std;
 void SpringBody2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_on_body_entered", "body"), &SpringBody2D::_on_body_entered);
 	ClassDB::bind_method(D_METHOD("_on_body_exited", "body"), &SpringBody2D::_on_body_exited);
-
 	ClassDB::bind_method(D_METHOD("set_spring_force", "s_force"), &SpringBody2D::set_spring_force);
     ClassDB::bind_method(D_METHOD("get_spring_force"), &SpringBody2D::get_spring_force);
 	ClassDB::bind_method(D_METHOD("set_impact_force", "i_force"), &SpringBody2D::set_impact_force);
     ClassDB::bind_method(D_METHOD("get_impact_force"), &SpringBody2D::get_impact_force);
 	ClassDB::bind_method(D_METHOD("set_max_force", "m_force"), &SpringBody2D::set_max_force);
     ClassDB::bind_method(D_METHOD("get_max_force"), &SpringBody2D::get_max_force);
+	ClassDB::bind_method(D_METHOD("set_minimum_force", "m_force"), &SpringBody2D::set_minimum_force);
+    ClassDB::bind_method(D_METHOD("get_minimum_force"), &SpringBody2D::get_minimum_force);
 	ClassDB::bind_method(D_METHOD("set_growth_force", "g_force"), &SpringBody2D::set_growth_force);
     ClassDB::bind_method(D_METHOD("get_growth_force"), &SpringBody2D::get_growth_force);
 	ClassDB::bind_method(D_METHOD("set_threshold", "thresh"), &SpringBody2D::set_threshold);
@@ -28,6 +29,7 @@ void SpringBody2D::_bind_methods() {
 
     ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "physics_release_magnitude", PROPERTY_HINT_RANGE, "0,25,0.1"),"set_spring_force","get_spring_force");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "physics_max_force", PROPERTY_HINT_RANGE, "0,1000,0.1"),"set_max_force","get_max_force");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "physics_min_buildup", PROPERTY_HINT_RANGE, "0,1000,0.1"),"set_minimum_force","get_minimum_force");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "physics_threshold", PROPERTY_HINT_RANGE, "0,1,0.01"),"set_threshold","get_threshold");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "physics_decay_mult", PROPERTY_HINT_RANGE, "0,10,0.1"),"set_growth_force","get_growth_force");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "physics_normal_weight", PROPERTY_HINT_RANGE, "0.6,1,0.01"),"set_normal_weight","get_normal_weight");
@@ -37,20 +39,26 @@ void SpringBody2D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "visual_impact_force", PROPERTY_HINT_RANGE, "-1000,1000,0.1"),"set_impact_force","get_impact_force");
 }
 
+
+
 SpringBody2D::SpringBody2D() {
 	// Initialize any variables here.
+	set_notify_transform(true);
 	set_process(true);
 	time_passed = 0.0;
 	IMPACT_FORCE = 10;
 	MAX_FORCE = 100;
 	SPRING_FORCE = 10;
 	SPRING_GROWTH_RATE = 5;
+	MINIMUM_FORCE = 250;
 	activation = 0.5;
 	normal_weight = 0.7;
 	force_weight = 0.3;
 	external_width = 500;
 }
 
+void SpringBody2D::set_minimum_force(float m_force) {MINIMUM_FORCE = m_force;}
+float SpringBody2D::get_minimum_force() const {return MINIMUM_FORCE;}
 void SpringBody2D::set_spring_force(float s_force) { SPRING_FORCE = s_force; }
 float SpringBody2D::get_spring_force() const { return SPRING_FORCE; }
 void SpringBody2D::set_threshold(float thresh) { activation = thresh; }
@@ -65,9 +73,37 @@ void SpringBody2D::set_growth_force(float g_force) { SPRING_GROWTH_RATE = g_forc
 float SpringBody2D::get_growth_force() const { return SPRING_GROWTH_RATE; }
 
 void SpringBody2D::_ready() {
+	bool found = false;
+	for (int i = 0; i < get_child_count(); i++) {
+		Node* child = get_child(i);
+		if (Object::cast_to<CollisionPolygon2D>(child)) 
+			found = true;
+	}
+	if (!found) {
+		print_error("SpringBody2D Requires a CollisionPolygon2D to Function Properly");
+		return;
+	}
 	poly = get_node<CollisionPolygon2D>("CollisionPolygon2D");
 	connect("body_entered", callable_mp(this, &SpringBody2D::_on_body_entered));
 	connect("body_exited", callable_mp(this, &SpringBody2D::_on_body_exited));
+}
+
+PackedStringArray SpringBody2D::_get_configuration_warnings() const {
+	PackedStringArray warnings;
+	print_line("CONFIG WARNINGS CALLED");
+	for (int i = 0; i < get_child_count(); i++) {
+		Node* child = get_child(i);
+		if (Object::cast_to<CollisionPolygon2D>(child)) 
+			return warnings;
+	}
+	warnings.push_back("This node requires a CollisionPolygon2D to function properly");
+	print_line("UH OH");
+	return warnings;
+}
+
+void SpringBody2D::_notification(int p_what) {
+	if (p_what == NOTIFICATION_CHILD_ORDER_CHANGED || p_what == NOTIFICATION_READY)
+		update_configuration_warnings();
 }
 
 void SpringBody2D::_physics_process(double delta) {
@@ -79,6 +115,7 @@ void SpringBody2D::_physics_process(double delta) {
 			Vector2 normal = spring.collision_normal;	
 
 			if (normal == Vector2(0,0)) {
+				update_configuration_warnings();
 				spring.collision_normal = _calculate_surface_normal(it.first, spring);
 			} else {
 				it.first->set_gravity_scale(0);
@@ -91,19 +128,16 @@ void SpringBody2D::_physics_process(double delta) {
 				Vector2 vel_tangent = vel - vel_normal;
 
 				// Reverse normal to create slingshot
-				print_line((vel * delta).dot(normal));
-				spring.buildUp += ((vel * delta).dot(normal) < -activation) ? -vel.dot(normal) * delta * SPRING_GROWTH_RATE * 10 : 0;
+				spring.buildUp += ((vel * delta).dot(normal) < -activation || spring.buildUp <= MINIMUM_FORCE) ? -vel.dot(normal) * delta * SPRING_GROWTH_RATE * 10 : 0;
 				float decay = exp(-delta * spring.buildUp);
 				vel_normal *= decay;
 				vel_tangent *= decay;
 
 				Vector2 impulse = (vel_normal + vel_tangent - vel);
-
-				if ((vel * delta).dot(normal) >= -activation && spring.buildUp >= 0) {
+				if ((vel * delta).dot(normal) >= -activation) {
 					Vector2 force_dir = Vector2(spring.init_force[0], spring.init_force[1]).normalized();
 					Vector2 dir = (force_dir * force_weight + spring.collision_normal * normal_weight).normalized();
-					impulse = dir * spring.buildUp * SPRING_FORCE * delta;
-					print_line(impulse);
+					impulse = dir * max(MINIMUM_FORCE, spring.buildUp) * SPRING_FORCE * delta;
 				}
 
 				// Clamp maximum force

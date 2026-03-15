@@ -112,7 +112,7 @@ cd C:\Users\ander\OneDrive\Desktop\Work\Coding\Godot\softbody\godot-cpp
 if %errorlevel% neq 0 goto :cmEnd
 C:
 if %errorlevel% neq 0 goto :cmEnd
-"C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.2544.0_x64__qbz5n2kfra8p0\python3.13.exe" -c "from binding_generator import generate_bindings";"generate_bindings( api_filepath='gdextension/extension_api.json', use_template_get_node='True', bits='32', precision='single', output_dir='C:/Users/ander/OneDrive/Desktop/Work/Coding/Godot/softbody/build')"
+"C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\python3.13.exe" -c "from binding_generator import generate_bindings";"generate_bindings( api_filepath='gdextension/extension_api.json', use_template_get_node='True', bits='32', precision='single', output_dir='C:/Users/ander/OneDrive/Desktop/Work/Coding/Godot/softbody/build')"
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -129,7 +129,7 @@ cd C:\Users\ander\OneDrive\Desktop\Work\Coding\Godot\softbody\godot-cpp
 if %errorlevel% neq 0 goto :cmEnd
 C:
 if %errorlevel% neq 0 goto :cmEnd
-"C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.2544.0_x64__qbz5n2kfra8p0\python3.13.exe" -c "from binding_generator import generate_bindings";"generate_bindings( api_filepath='gdextension/extension_api.json', use_template_get_node='True', bits='32', precision='single', output_dir='C:/Users/ander/OneDrive/Desktop/Work/Coding/Godot/softbody/build')"
+"C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\python3.13.exe" -c "from binding_generator import generate_bindings";"generate_bindings( api_filepath='gdextension/extension_api.json', use_template_get_node='True', bits='32', precision='single', output_dir='C:/Users/ander/OneDrive/Desktop/Work/Coding/Godot/softbody/build')"
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -146,7 +146,7 @@ cd C:\Users\ander\OneDrive\Desktop\Work\Coding\Godot\softbody\godot-cpp
 if %errorlevel% neq 0 goto :cmEnd
 C:
 if %errorlevel% neq 0 goto :cmEnd
-"C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.2544.0_x64__qbz5n2kfra8p0\python3.13.exe" -c "from binding_generator import generate_bindings";"generate_bindings( api_filepath='gdextension/extension_api.json', use_template_get_node='True', bits='32', precision='single', output_dir='C:/Users/ander/OneDrive/Desktop/Work/Coding/Godot/softbody/build')"
+"C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\python3.13.exe" -c "from binding_generator import generate_bindings";"generate_bindings( api_filepath='gdextension/extension_api.json', use_template_get_node='True', bits='32', precision='single', output_dir='C:/Users/ander/OneDrive/Desktop/Work/Coding/Godot/softbody/build')"
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -163,7 +163,7 @@ cd C:\Users\ander\OneDrive\Desktop\Work\Coding\Godot\softbody\godot-cpp
 if %errorlevel% neq 0 goto :cmEnd
 C:
 if %errorlevel% neq 0 goto :cmEnd
-"C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.2544.0_x64__qbz5n2kfra8p0\python3.13.exe" -c "from binding_generator import generate_bindings";"generate_bindings( api_filepath='gdextension/extension_api.json', use_template_get_node='True', bits='32', precision='single', output_dir='C:/Users/ander/OneDrive/Desktop/Work/Coding/Godot/softbody/build')"
+"C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\python3.13.exe" -c "from binding_generator import generate_bindings";"generate_bindings( api_filepath='gdextension/extension_api.json', use_template_get_node='True', bits='32', precision='single', output_dir='C:/Users/ander/OneDrive/Desktop/Work/Coding/Godot/softbody/build')"
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
