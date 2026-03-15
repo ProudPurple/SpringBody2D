@@ -4,3 +4,7 @@ build/
 project/
 *.import
 *.uid
+*.exp
+*.lib
+*.obj
+~*

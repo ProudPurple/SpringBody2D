@@ -18,24 +18,24 @@ sources = Glob("src/*.cpp")
 
 if env["platform"] == "macos":
     library = env.SharedLibrary(
-        "project/addons/springbody2d/bin/libsoftbody{}{}".format(env["suffix"], env["SHLIBSUFFIX"]),
+        "addons/springbody2d/bin/libspringbody{}{}".format(env["suffix"], env["SHLIBSUFFIX"]),
         source=sources,
     )
 
 elif env["platform"] == "ios":
     if env["ios_simulator"]:
         library = env.StaticLibrary(
-            "project/addons/springbody2d/bin/libspringbody.{}.{}.simulator.a".format(env["platform"], env["target"]),
+            "addons/springbody2d/bin/libspringbody.{}.{}.simulator.a".format(env["platform"], env["target"]),
             source=sources,
         )
     else:
         library = env.StaticLibrary(
-            "project/addons/springbody2d/bin/libspringbody.{}.{}.a".format(env["platform"], env["target"]),
+            "addons/springbody2d/bin/libspringbody.{}.{}.a".format(env["platform"], env["target"]),
             source=sources,
         )
 else:
     library = env.SharedLibrary(
-        "project/addons/springbody2d/bin/libspringbody{}{}".format(env["suffix"], env["SHLIBSUFFIX"]),
+        "addons/springbody2d/bin/libspringbody{}{}".format(env["suffix"], env["SHLIBSUFFIX"]),
         source=sources,
     )
 

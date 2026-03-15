@@ -31,12 +31,12 @@ void SpringBody2D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "physics_max_force", PROPERTY_HINT_RANGE, "0,1000,0.1"),"set_max_force","get_max_force");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "physics_min_buildup", PROPERTY_HINT_RANGE, "0,1000,0.1"),"set_minimum_force","get_minimum_force");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "physics_threshold", PROPERTY_HINT_RANGE, "0,1,0.01"),"set_threshold","get_threshold");
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "physics_decay_mult", PROPERTY_HINT_RANGE, "0,10,0.1"),"set_growth_force","get_growth_force");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "physics_growth_mult", PROPERTY_HINT_RANGE, "0,10,0.1"),"set_growth_force","get_growth_force");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "physics_normal_weight", PROPERTY_HINT_RANGE, "0.6,1,0.01"),"set_normal_weight","get_normal_weight");
 
-	ADD_GROUP("Visual", "visual_");
+	//ADD_GROUP("Visual", "visual_");
 
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "visual_impact_force", PROPERTY_HINT_RANGE, "-1000,1000,0.1"),"set_impact_force","get_impact_force");
+	//ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "visual_impact_force", PROPERTY_HINT_RANGE, "-1000,1000,0.1"),"set_impact_force","get_impact_force");
 }
 
 
