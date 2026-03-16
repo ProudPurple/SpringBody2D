@@ -28,4 +28,4 @@ A Godot 4 GDExtension plugin that adds a `SpringBody2D` node, which applies a cu
 - Windows x86_64 (other platforms require building from source)
 
 ## Modifications
--To Modify you must download the gdextension c++ repository and place it in the root folder then run SConstruct
+- To Modify you must download the gdextension c++ repository and place it in the root folder then run SConstruct
