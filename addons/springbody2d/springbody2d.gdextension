@@ -5,7 +5,11 @@ reloadable = true
 
 [libraries]
 windows.debug.x86_64 = "res://addons/springbody2d/bin/libspringbody.windows.template_debug.x86_64.dll"
-windows.release.x86_64 = "res://addons/springbody2d/bin/libspringbody.windows.template_debug.x86_64.dll"
+windows.release.x86_64 = "res://addons/springbody2d/bin/libspringbody.windows.template_release.x86_64.dll"
+linux.debug.x86_64 = "res://addons/springbody2d/bin/libspringbody.linux.template_debug.x86_64.so"
+linux.release.x86_64 = "res://addons/springbody2d/bin/libspringbody.linux.template_release.x86_64.so"
+macos.debug = "res://addons/springbody2d/bin/libspringbody.macos.template_debug.universal.dylib"
+macos.release = "res://addons/springbody2d/bin/libspringbody.macos.template_release.universal.dylib"
 
 [icons]
 springbody2d = "res://addons/springbody2d/springicon.svg"

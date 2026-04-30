@@ -1,4 +1,4 @@
-#!/usr/addons/springbody2d/env python
+#!/usr/bin/env python
 import os
 import sys
 
