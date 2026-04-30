@@ -2,6 +2,7 @@
 #include <godot_cpp/classes/node.hpp>
 #include <vector>
 #include <unordered_map>
+#include <cfloat>
 #include <godot_cpp/classes/tween.hpp>
 #include <godot_cpp/variant/vector2.hpp>
 #include <godot_cpp/classes/node.hpp>
@@ -48,7 +49,7 @@ namespace godot {
 	public:
 		SpringBody2D();
 
-		void _ready();
+		void _ready() override;
 		void _bind_method();
 		void set_spring_force(float s_force);
 		void set_minimum_force(float m_force);
