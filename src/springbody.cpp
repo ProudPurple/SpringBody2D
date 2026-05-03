@@ -1,6 +1,5 @@
 #include "springbody.h"
 #include <godot_cpp/core/class_db.hpp>
-#include <iostream>
 #include <algorithm>
 #include <cmath>
 
@@ -44,6 +43,8 @@ SpringBody2D::SpringBody2D() {
 	activation = 0.5;
 	normal_weight = 0.7;
 	force_weight = 0.3;
+	physics_delta = 1.0f / (float)Engine::get_singleton()->get_physics_ticks_per_second();
+	geom = Geometry2D::get_singleton();
 }
 
 void SpringBody2D::set_minimum_force(float m_force) {MINIMUM_FORCE = m_force;}
@@ -94,48 +95,46 @@ void SpringBody2D::_notification(int p_what) {
 void SpringBody2D::_physics_process(double delta) {
 	for (auto& it : spring_targets) {
 		SpringTarget& spring = it.second;
-		if (spring.active) {
-			Vector2 vel = it.first->get_linear_velocity();
-			Vector2 normal = spring.collision_normal;	
+		Vector2 vel = it.first->get_linear_velocity();
+		Vector2 normal = spring.collision_normal;	
 
-			if (normal == Vector2(0,0)) {
-				update_configuration_warnings();
-				spring.collision_normal = _calculate_surface_normal(it.first, spring);
-			} else {
-				Vector2 gravity = it.first->get_gravity();
-				it.first->apply_central_force(-gravity * it.first->get_mass());
+		if (normal == Vector2(0,0)) {
+			update_configuration_warnings();
+			spring.collision_normal = _calculate_surface_normal(it.first, spring);
+		} else {
+			Vector2 gravity = it.first->get_gravity();
+			it.first->apply_central_force(-gravity * it.first->get_mass());
 
-				Vector2 temp = _calculate_surface_normal(it.first, spring);
+			Vector2 temp = _calculate_surface_normal(it.first, spring);
 
-				if (temp != Vector2(0,0))
-					spring.collision_normal = normal = temp;
+			if (temp != Vector2(0,0))
+				spring.collision_normal = normal = temp;
 
-				Vector2 vel_normal = normal * vel.dot(normal);
-				Vector2 vel_tangent = vel - vel_normal;
+			Vector2 vel_normal = normal * vel.dot(normal);
+			Vector2 vel_tangent = vel - vel_normal;
 
-				if ((vel * delta).dot(normal) < -activation)
-					spring.buildUp += -vel.dot(normal) * delta * SPRING_GROWTH_RATE * 10;
-				else if (spring.buildUp <= MINIMUM_FORCE)
-					spring.buildUp = MINIMUM_FORCE;
-				
-				float decay = exp(-delta * spring.buildUp);
-				vel_normal *= decay;
-				vel_tangent *= decay;
+			if ((vel * delta).dot(normal) < -activation)
+				spring.buildUp += -vel.dot(normal) * delta * SPRING_GROWTH_RATE * 10;
+			else if (spring.buildUp <= MINIMUM_FORCE)
+				spring.buildUp = MINIMUM_FORCE;
+			
+			float decay = exp(-delta * spring.buildUp);
+			vel_normal *= decay;
+			vel_tangent *= decay;
 
-				Vector2 impulse = (vel_normal + vel_tangent - vel);
-				if ((vel * delta).dot(normal) >= -activation) {
-					Vector2 force_dir = Vector2(spring.init_force[0], spring.init_force[1]).normalized();
-					Vector2 dir = (force_dir * force_weight + spring.collision_normal * normal_weight).normalized();
-					impulse = dir * max(MINIMUM_FORCE, spring.buildUp) * SPRING_FORCE * delta;
-				}
-
-				// Clamp maximum force
-				if (impulse.length() > MAX_FORCE)
-					impulse = impulse.normalized() * MAX_FORCE;
-				
-				// Apply impulse
-				it.first->apply_central_impulse(impulse);
+			Vector2 impulse = (vel_normal + vel_tangent - vel);
+			if ((vel * delta).dot(normal) >= -activation) {
+				Vector2 force_dir = Vector2(spring.init_force[0], spring.init_force[1]).normalized();
+				Vector2 dir = (force_dir * force_weight + spring.collision_normal * normal_weight).normalized();
+				impulse = dir * max(MINIMUM_FORCE, spring.buildUp) * SPRING_FORCE * delta;
 			}
+
+			// Clamp maximum force
+			if (impulse.length() > MAX_FORCE)
+				impulse = impulse.normalized() * MAX_FORCE;
+			
+			// Apply impulse
+			it.first->apply_central_impulse(impulse);
 		}
     }
 }
@@ -143,9 +142,8 @@ void SpringBody2D::_physics_process(double delta) {
 void SpringBody2D::_on_body_entered(Node *body) {
 	if (body->is_class("RigidBody2D")) {
 		RigidBody2D *rb = Object::cast_to<RigidBody2D>(body);
-		float initial_delta = 1.0 / 30.0f;
-		Vector2 prev_pos = rb->get_global_position() - rb->get_linear_velocity() * initial_delta;
-		spring_targets[rb] = SpringTarget{rb->get_linear_velocity(), prev_pos, Vector2(0,0), 0, true};
+		Vector2 prev_pos = rb->get_global_position() - rb->get_linear_velocity() * physics_delta;
+		spring_targets[rb] = SpringTarget{rb->get_linear_velocity(), prev_pos, Vector2(0,0), 0};
 	}
 }
 
@@ -160,7 +158,7 @@ void SpringBody2D::_on_body_exited(Node *body) {
     }
 }
 
-Vector2 SpringBody2D::_calculate_surface_normal(RigidBody2D* rb, SpringTarget spring) {
+Vector2 SpringBody2D::_calculate_surface_normal(RigidBody2D* rb, const SpringTarget& spring) {
 	if (!poly) {
 		print_error("SpringBody2D: _calculate_surface_normal called but poly is null — ensure a CollisionPolygon2D is a direct child");
 		return Vector2(0,0);
@@ -173,7 +171,6 @@ Vector2 SpringBody2D::_calculate_surface_normal(RigidBody2D* rb, SpringTarget sp
 
     PackedVector2Array poly_points = poly->get_polygon();
     Transform2D xf = poly->get_global_transform();
-    Geometry2D* geom = Geometry2D::get_singleton();
 
 	if (!geom) {
 		print_error("SpringBody2D: Geometry2D singleton unavailable");

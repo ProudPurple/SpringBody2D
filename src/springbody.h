@@ -4,6 +4,7 @@
 #include <godot_cpp/variant/vector2.hpp>
 #include <godot_cpp/classes/geometry2d.hpp>
 #include <godot_cpp/classes/rigid_body2d.hpp>
+#include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/classes/collision_polygon2d.hpp>
 #include <godot_cpp/classes/area2d.hpp>
 
@@ -13,7 +14,6 @@ namespace godot {
 		Vector2 init_pos;
 		Vector2 collision_normal;
 		float buildUp;
-		bool active;
 	};
 
 	class SpringBody2D : public Area2D{
@@ -29,6 +29,8 @@ namespace godot {
 		float activation;
 		float MINIMUM_FORCE;
 		std::unordered_map<RigidBody2D*, SpringTarget> spring_targets;
+		Geometry2D* geom = nullptr;
+		float physics_delta;
 
 	protected:
 		static void _bind_methods();
@@ -54,7 +56,7 @@ namespace godot {
 		void _on_body_entered(Node *body);
 		void _on_body_exited(Node *body);
 		virtual PackedStringArray _get_configuration_warnings() const override;
-		Vector2 _calculate_surface_normal(RigidBody2D* rb, SpringTarget spring);
+		Vector2 _calculate_surface_normal(RigidBody2D* rb, const SpringTarget& spring);
 
 	};
 

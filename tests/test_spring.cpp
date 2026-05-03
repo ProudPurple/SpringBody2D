@@ -84,3 +84,21 @@ TEST_CASE("clamped impulse preserves direction") {
     CHECK(result.x == doctest::Approx(expected.x).epsilon(0.01f));
     CHECK(result.y == doctest::Approx(expected.y).epsilon(0.01f));
 }
+
+TEST_CASE("release impulse magnitude respects MINIMUM_FORCE floor") {
+    Vec2 dir = {0, 1};
+    Vec2 normal = {0, 1};
+    Vec2 result = calc_release_impulse(dir, normal, 0.3f, 0.7f,
+                                        0.0f, MINIMUM_FORCE, SPRING_FORCE, 0.016);
+    CHECK(result.length() >= MINIMUM_FORCE * SPRING_FORCE * 0.016f);
+}
+
+TEST_CASE("release impulse direction blends normal and entry velocity") {
+    Vec2 entry = {1, 0};   // horizontal entry
+    Vec2 normal = {0, 1};  // vertical normal
+    Vec2 result = calc_release_impulse(entry, normal, 0.3f, 0.7f,
+                                        50.0f, MINIMUM_FORCE, SPRING_FORCE, 0.016);
+    // result should have both x and y components — neither pure normal nor pure entry
+    CHECK(result.x > 0.0f);
+    CHECK(result.y > 0.0f);
+}

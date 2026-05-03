@@ -9,3 +9,5 @@ godot-cpp/
 *.lib
 *.obj
 ~*
+tests/test_runner.exe
+tests/test_runner

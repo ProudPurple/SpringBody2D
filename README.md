@@ -72,3 +72,19 @@ scons platform=linux target=template_release
 ```
 
 > If you already have the repo but cloned without `--recurse-submodules`, run `git submodule update --init --recursive` to pull in `godot-cpp`.
+
+## Running tests
+
+Tests cover the core physics math and have no Godot dependency.
+
+**Windows (VS2022 Developer Command Prompt):**
+```bash
+cd tests
+cl /EHsc /std:c++17 test_spring.cpp /Fe:test_runner.exe
+test_runner.exe
+```
+
+**Linux/macOS:**
+```bash
+g++ -std=c++17 tests/test_spring.cpp -o tests/test_runner && ./tests/test_runner
+```
