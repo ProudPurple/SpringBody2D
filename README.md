@@ -51,10 +51,10 @@ Think of it as a pinball bumper: a slow graze barely moves the ball, a fast dire
 
 ## Building from source
 
-`godot-cpp` is included as a git submodule. Clone with submodules, install SCons, then build:
+`godot-cpp` is necessary to build from source and it needs to be cloned first
 
 ```sh
-git clone --recurse-submodules https://github.com/ProudPurple/softbody
+git clone https://github.com/ProudPurple/softbody
 cd softbody
 pip install scons
 scons platform=<windows|linux|macos>
