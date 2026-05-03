@@ -1,21 +1,11 @@
 #pragma once
-#include <godot_cpp/classes/node.hpp>
-#include <vector>
 #include <unordered_map>
 #include <cfloat>
-#include <godot_cpp/classes/tween.hpp>
 #include <godot_cpp/variant/vector2.hpp>
-#include <godot_cpp/classes/node.hpp>
-#include <godot_cpp/classes/node2d.hpp>
 #include <godot_cpp/classes/geometry2d.hpp>
-#include <godot_cpp/classes/physics_server2d.hpp>
-#include <godot_cpp/classes/image.hpp>
 #include <godot_cpp/classes/rigid_body2d.hpp>
-#include <godot_cpp/classes/method_tweener.hpp>
 #include <godot_cpp/classes/collision_polygon2d.hpp>
 #include <godot_cpp/classes/area2d.hpp>
-
-using namespace std;
 
 namespace godot {
 	struct SpringTarget {
@@ -30,18 +20,15 @@ namespace godot {
 		GDCLASS(SpringBody2D, Area2D);
 
 	private:
-		double time_passed;
-		CollisionPolygon2D* poly;
-		float IMPACT_FORCE;
+		CollisionPolygon2D* poly = nullptr;
 		float SPRING_GROWTH_RATE;
 		float MAX_FORCE;
 		float SPRING_FORCE;
 		float normal_weight;
 		float force_weight;
 		float activation;
-		float external_width;
 		float MINIMUM_FORCE;
-		unordered_map<RigidBody2D*, SpringTarget> spring_targets;
+		std::unordered_map<RigidBody2D*, SpringTarget> spring_targets;
 
 	protected:
 		static void _bind_methods();
@@ -50,13 +37,10 @@ namespace godot {
 		SpringBody2D();
 
 		void _ready() override;
-		void _bind_method();
 		void set_spring_force(float s_force);
 		void set_minimum_force(float m_force);
 		float get_minimum_force() const;
 		float get_spring_force() const;
-		void set_impact_force(float i_force);
-		float get_impact_force() const;
 		void set_threshold(float thresh);
 		float get_threshold() const;
 		void set_normal_weight(float weight);
@@ -74,4 +58,4 @@ namespace godot {
 
 	};
 
-} // namespace godot
+}
