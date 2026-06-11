@@ -21,12 +21,13 @@ void SpringBody2D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_threshold"), &SpringBody2D::get_threshold);
 	ClassDB::bind_method(D_METHOD("set_normal_weight", "weight"), &SpringBody2D::set_normal_weight);
     ClassDB::bind_method(D_METHOD("get_normal_weight"), &SpringBody2D::get_normal_weight);
+	ClassDB::bind_method(D_METHOD("get_buildup", "body"), &SpringBody2D::get_buildup);
 
     ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "release_magnitude", PROPERTY_HINT_RANGE, "0,25,0.1"),"set_spring_force","get_spring_force");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "max_force", PROPERTY_HINT_RANGE, "0,1000,0.1"),"set_max_force","get_max_force");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "min_buildup", PROPERTY_HINT_RANGE, "0,1000,0.1"),"set_minimum_force","get_minimum_force");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "threshold", PROPERTY_HINT_RANGE, "0,1,0.01"),"set_threshold","get_threshold");
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "growth_mult", PROPERTY_HINT_RANGE, "0,10,0.1"),"set_growth_force","get_growth_force");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "growth_mult", PROPERTY_HINT_RANGE, "0,100,0.1"),"set_growth_force","get_growth_force");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "normal_weight", PROPERTY_HINT_RANGE, "0.6,1,0.01"),"set_normal_weight","get_normal_weight");
 }
 
@@ -38,7 +39,7 @@ SpringBody2D::SpringBody2D() {
 	set_process(true);
 	MAX_FORCE = 100;
 	SPRING_FORCE = 10;
-	SPRING_GROWTH_RATE = 5;
+	SPRING_GROWTH_RATE = 50;
 	MINIMUM_FORCE = 250;
 	activation = 0.5;
 	normal_weight = 0.7;
@@ -59,6 +60,12 @@ void SpringBody2D::set_max_force(float m_force) { MAX_FORCE = m_force; }
 float SpringBody2D::get_max_force() const { return MAX_FORCE; }
 void SpringBody2D::set_growth_force(float g_force) { SPRING_GROWTH_RATE = g_force; }
 float SpringBody2D::get_growth_force() const { return SPRING_GROWTH_RATE; }
+float SpringBody2D::get_buildup(RigidBody2D* rb) const {
+    auto it = spring_targets.find(rb);
+    if (it != spring_targets.end())
+        return it->second.buildUp;
+    return -1.0f;
+}
 
 void SpringBody2D::_ready() {
 	bool found = false;
@@ -114,7 +121,7 @@ void SpringBody2D::_physics_process(double delta) {
 			Vector2 vel_tangent = vel - vel_normal;
 
 			if ((vel * delta).dot(normal) < -activation)
-				spring.buildUp += -vel.dot(normal) * delta * SPRING_GROWTH_RATE * 10;
+				spring.buildUp += -vel.dot(normal) * delta * SPRING_GROWTH_RATE;
 			else if (spring.buildUp <= MINIMUM_FORCE)
 				spring.buildUp = MINIMUM_FORCE;
 			

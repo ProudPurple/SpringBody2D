@@ -43,6 +43,7 @@ namespace godot {
 		void set_minimum_force(float m_force);
 		float get_minimum_force() const;
 		float get_spring_force() const;
+		float get_buildup(RigidBody2D* body) const;
 		void set_threshold(float thresh);
 		float get_threshold() const;
 		void set_normal_weight(float weight);
