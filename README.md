@@ -1,5 +1,7 @@
 # SpringBody2D
 
+### Please Star if this plugin helps you out! ⭐
+
 A Godot 4 GDExtension plugin that adds a `SpringBody2D` node — a physics-aware `Area2D` that stores kinetic energy from incoming `RigidBody2D` nodes and releases it as a directional impulse.
 
 ![demo](https://github.com/user-attachments/assets/012780b7-403e-4426-b8b7-e1792f3fcb8d)
@@ -11,7 +13,7 @@ A Godot 4 GDExtension plugin that adds a `SpringBody2D` node — a physics-aware
 1. **Compression phase** — while the body moves into the surface (velocity dot surface-normal is negative), gravity is disabled and a `buildUp` counter grows. The body's velocity is damped exponentially each frame, so it slows down as if compressing a spring.
 2. **Release phase** — once the body stops compressing (or `buildUp` exceeds `min_buildup`), an impulse fires. The direction is a weighted blend of the surface normal and the body's original entry direction; the magnitude is `max(min_buildup, buildUp) × release_magnitude`, capped at `max_force`.
 
-Think of it as a pinball bumper: a slow graze barely moves the ball, a fast direct hit launches it hard.
+It works like one large spring compressing and shooting out the object all in one smooth motion.
 
 ## Installation
 
@@ -51,10 +53,10 @@ Think of it as a pinball bumper: a slow graze barely moves the ball, a fast dire
 
 ## Building from source
 
-`godot-cpp` is included as a git submodule. Clone with submodules, install SCons, then build:
+`godot-cpp` is necessary to build from source and it needs to be cloned first
 
 ```sh
-git clone --recurse-submodules https://github.com/ProudPurple/softbody
+git clone https://github.com/ProudPurple/softbody
 cd softbody
 pip install scons
 scons platform=<windows|linux|macos>
