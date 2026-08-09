@@ -68,17 +68,16 @@ float SpringBody2D::get_buildup(RigidBody2D* rb) const {
 }
 
 void SpringBody2D::_ready() {
-	bool found = false;
 	for (int i = 0; i < get_child_count(); i++) {
-		Node* child = get_child(i);
-		if (Object::cast_to<CollisionPolygon2D>(child)) 
-			found = true;
+		if (CollisionPolygon2D* candidate = Object::cast_to<CollisionPolygon2D>(get_child(i))) {
+			poly = candidate;
+			break;
+		}
 	}
-	if (!found) {
+	if (!poly) {
 		print_error("SpringBody2D Requires a CollisionPolygon2D to Function Properly");
 		return;
 	}
-	poly = get_node<CollisionPolygon2D>("CollisionPolygon2D");
 	connect("body_entered", callable_mp(this, &SpringBody2D::_on_body_entered));
 	connect("body_exited", callable_mp(this, &SpringBody2D::_on_body_exited));
 }
