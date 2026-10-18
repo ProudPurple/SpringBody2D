@@ -1,0 +1,6 @@
+{
+  "type": "4.5",
+  "enabled_classes": ["Area2D", "RigidBody2D", "CollisionPolygon2D", "Geometry2D", "Engine",
+                      "Node", "Object", "OS", "FileAccess", "Image", "Mutex", "Semaphore",
+                      "WorkerThreadPool", "XMLParser", "ClassDBSingleton", "RefCounted", "EditorPlugin"]
+}

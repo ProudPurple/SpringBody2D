@@ -56,35 +56,43 @@ jobs:
       - name: Install SCons
         run: pip install scons
 
+      # Caches the compiled godot-cpp AND .sconsign.dblite, the file where SCons records what
+      # it already built. Without that file a restored godot-cpp gets recompiled anyway.
+      # The key includes the build profile, so editing build_profile.json rebuilds godot-cpp.
       - name: Cache godot-cpp
         id: godot-cpp-cache
         uses: actions/cache@v4
         with:
-          path: godot-cpp
-          key: godot-cpp-4.5-${{ matrix.platform }}-${{ matrix.arch }}
+          path: |
+            godot-cpp
+            .sconsign.dblite
+          key: godot-cpp-4.5-v2-${{ matrix.platform }}-${{ matrix.arch }}-${{ hashFiles('build_profile.json') }}
 
       - name: Get godot-cpp
         if: steps.godot-cpp-cache.outputs.cache-hit != 'true'
         run: git clone --depth 1 --branch 4.5 https://github.com/godotengine/godot-cpp.git godot-cpp
 
-      - name: Build godot-cpp
-        if: steps.godot-cpp-cache.outputs.cache-hit != 'true'
-        run: |
-          cd godot-cpp
-          scons platform=${{ matrix.platform }} arch=${{ matrix.arch }} target=template_debug
-          scons platform=${{ matrix.platform }} arch=${{ matrix.arch }} target=template_release
-
+      # No separate godot-cpp build step: the SConstruct below builds godot-cpp itself, and a
+      # separate build keeps its own records, so its work was never reused.
+      # build_profile.json limits godot-cpp to the classes the plugin uses.
       - name: Build (debug)
-        run: scons platform=${{ matrix.platform }} arch=${{ matrix.arch }} target=template_debug
+        run: scons platform=${{ matrix.platform }} arch=${{ matrix.arch }} target=template_debug build_profile=build_profile.json
 
       - name: Build (release)
-        run: scons platform=${{ matrix.platform }} arch=${{ matrix.arch }} target=template_release
+        run: scons platform=${{ matrix.platform }} arch=${{ matrix.arch }} target=template_release build_profile=build_profile.json
 
+      # Upload only this platform's binaries. Uploading the whole bin/ folder also uploaded the
+      # stale copies of the other platforms' binaries already committed in the repo, and when
+      # the artifacts were merged the Windows one (copied last) overwrote the fresh Linux and
+      # macOS binaries with those stale copies.
       - name: Upload binaries
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact-name }}
-          path: addons/springbody2d/bin/
+          path: |
+            addons/springbody2d/bin/libspringbody.${{ matrix.platform }}.*
+            !addons/springbody2d/bin/*.lib
+            !addons/springbody2d/bin/*.exp
           if-no-files-found: error
 
   commit-binaries:
