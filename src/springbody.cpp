@@ -148,8 +148,20 @@ void SpringBody2D::_physics_process(double delta) {
 void SpringBody2D::_on_body_entered(Node *body) {
 	if (body->is_class("RigidBody2D")) {
 		RigidBody2D *rb = Object::cast_to<RigidBody2D>(body);
-		Vector2 prev_pos = rb->get_global_position() - rb->get_linear_velocity() * physics_delta;
-		spring_targets[rb] = SpringTarget{rb->get_linear_velocity(), prev_pos, Vector2(0,0), 0};
+		Vector2 pos = rb->get_global_position();
+		Vector2 vel = rb->get_linear_velocity();
+		Vector2 prev_pos = pos - vel * physics_delta;
+
+		if (poly && geom) {
+			PackedVector2Array pts = poly->get_polygon();
+			Transform2D xf = poly->get_global_transform();
+			PackedVector2Array world_pts;
+			for (int i = 0; i < pts.size(); i++)
+				world_pts.push_back(xf.xform(pts[i]));
+			for (int frames_back = 2; frames_back <= 8 && geom->is_point_in_polygon(prev_pos, world_pts); frames_back++)
+				prev_pos = pos - vel * physics_delta * frames_back;
+		}
+		spring_targets[rb] = SpringTarget{vel, prev_pos, Vector2(0,0), 0};
 	}
 }
 
